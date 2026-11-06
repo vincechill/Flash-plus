@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090a0b">
+  <meta name="description" content="FLASH+ — Un nouveau contrôle de votre éclairage.">
+  <title>FLASH+ — Votre lumière. Vos règles.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--bg:#090a0c;--panel:#151619;--panel2:#1d1e20;--ink:#f6f6f4;--muted:#96979b;--line:rgba(255,255,255,.105);--yellow:#ffe34c;--yellow2:#ffe994;--r:28px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100svh;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 60% 36% at 50% 12%,rgba(255,220,75,.075),transparent 77%),radial-gradient(circle at 100% 75%,rgba(255,217,54,.035),transparent 40%)}
+    button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #fff;outline-offset:4px}button:disabled{opacity:.55;cursor:wait}
+    .wrap{width:min(1080px,calc(100% - 40px));margin:auto}
+    .header{height:92px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.065)}
+    .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}.brand-symbol{display:grid;place-items:center;width:43px;height:43px;border-radius:16px;background:var(--yellow);color:#0c0c0c;box-shadow:0 6px 25px #ffdf4126}
+    .brand-word{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:25px;letter-spacing:-1.6px}.brand-word span{color:var(--yellow)}
+    .header-right{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:11px 14px;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#bebec1}
+    .online{width:7px;height:7px;background:#85878b;border-radius:50%;transition:background .25s}.online.on{background:var(--yellow);box-shadow:0 0 14px var(--yellow)}
+    main{padding:40px 0 80px}.hero{text-align:center;position:relative}.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #454025;border-radius:999px;background:#201e16;padding:9px 14px;color:#ffe79b;font-size:11px;letter-spacing:1.6px;font-weight:800;text-transform:uppercase}
+    .eyebrow svg{width:13px;height:13px}.title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(43px,7.2vw,85px);line-height:1.01;letter-spacing:-.065em;margin:23px auto 19px;max-width:840px}
+    .title em{font-style:normal;color:var(--yellow)}.sub{font-size:clamp(13px,2vw,16px);line-height:1.85;color:var(--muted);max-width:510px;margin:0 auto}
+    .light-stage{position:relative;width:min(380px,90vw);height:315px;margin:15px auto 0;display:grid;place-items:center;isolation:isolate;touch-action:pan-y}
+    .stage-lines{position:absolute;width:310px;height:310px;max-width:94%;max-height:94%;border:1px solid #ffffff11;border-radius:50%;box-shadow:0 0 0 35px #ffffff04,0 0 0 80px #ffffff02}
+    .stage-lines::before,.stage-lines::after{content:"";position:absolute;inset:32px;border:1px dashed #ffffff16;border-radius:50%}.stage-lines::after{inset:69px}
+    .light-halo{position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,var(--yellow) 0%,#ffda4a77 16%,#ffe34c13 49%,transparent 74%);filter:blur(20px);opacity:.65;transition:all .4s}
+    .light-core{position:absolute;border-radius:50%;width:124px;height:124px;background:radial-gradient(circle at 32% 27%,#fffde3,#ffe452 60%,#ffbe16);box-shadow:0 0 34px #ffe24a4f,0 0 95px #ffe24a24,inset 0 -6px 14px #ca9a2b44;display:grid;place-items:center;color:#101010;transition:transform .35s,box-shadow .35s}
+    .light-core svg{width:54px;height:54px;filter:drop-shadow(0 2px 1px #3332)}
+    .stage-on .light-core{transform:scale(1.06);box-shadow:0 0 48px #ffe34c9b,0 0 140px #ffe34c44,inset 0 -6px 14px #ca9a2b44}
+    .stage-on .light-halo{opacity:1;transform:scale(1.24)}
+    .light-core .torch-rays{opacity:0;transform-origin:50% 50%;transition:opacity .25s}
+    .stage-on .light-core .torch-rays{opacity:1}
+    .activation-overlay{position:fixed;inset:0;z-index:65;pointer-events:none;opacity:0;display:grid;place-items:center;background:rgba(6,7,8,.60);backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);transition:opacity .35s,backdrop-filter .35s,-webkit-backdrop-filter .35s}
+    .activation-overlay.show{opacity:1;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+    .activation-content{display:flex;flex-direction:column;align-items:center;gap:18px;transform:translateY(20px) scale(.9);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+    .activation-overlay.show .activation-content{transform:translateY(0) scale(1)}
+    .activation-symbol{width:152px;height:152px;border-radius:52px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#fff4a4,#ffe34c 60%,#f3bc24);box-shadow:0 0 0 1px #fff7b099,0 0 65px #ffe34c66,0 0 125px #ffe34c20;color:#171409}
+    .activation-symbol svg{width:86px;height:86px;stroke:currentColor}
+    .activation-copy{padding:12px 20px;border-radius:999px;background:#1a1b1c;border:1px solid #ffe34c55;color:#fff6b8;font-size:11px;font-weight:800;letter-spacing:1.7px}
+
+    .stage-label{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);background:#141517;border:1px solid var(--line);padding:9px 13px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:1px;color:#bdbec0;white-space:nowrap}
+    .stage-label strong{color:#ffe34c}
+    .power-area{display:flex;flex-direction:column;align-items:center;gap:17px;margin-top:30px}
+    .power{width:min(100%,405px);min-height:70px;background:var(--yellow);border:0;color:#11100a;border-radius:999px;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 10px 35px #ffe34c20, inset 0 -3px #bba52933;transition:transform .2s,box-shadow .2s}
+    .power:hover{transform:translateY(-2px);box-shadow:0 15px 42px #ffe34c35}.power:active{transform:scale(.98)}.power svg{width:22px;height:22px}
+    .power.off{background:#252528;color:#f4f4f5;box-shadow:none;border:1px solid #ffffff2b}.power.off:hover{background:#303033}
+    .helper{max-width:560px;display:flex;gap:14px;align-items:flex-start;text-align:left;padding:19px 21px;background:linear-gradient(110deg,#1d1a10,#151516 80%);border:1px solid #3b3421;border-radius:23px;margin:32px auto 0}
+    .helper .info{flex:none;width:27px;height:27px;border-radius:11px;background:#ffe34c;color:#111;display:grid;place-items:center}.helper p{margin:0;font-size:12px;line-height:1.8;color:#d6d2c5}.helper strong{color:#ffe34c}
+    .features{margin:75px auto 0;animation:rise .5s both}.features[hidden]{display:none}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:21px}.section-kicker{text-transform:uppercase;letter-spacing:1.7px;color:var(--yellow);font-weight:800;font-size:10px}
+    .section-head h2{font-family:'Space Grotesk',Manrope,sans-serif;font-size:clamp(25px,4vw,38px);margin:7px 0 0;letter-spacing:-1.6px}.number-bubble{font-size:11px;color:#e2e2e3;background:#202123;padding:12px 16px;border-radius:999px;border:1px solid var(--line);font-weight:800;white-space:nowrap}
+    .preview{position:relative;height:225px;border-radius:31px;overflow:hidden;background:#101114;border:1px solid #ffffff15;display:grid;place-items:center;margin-bottom:29px;isolation:isolate}
+    .preview-beam{--beam-color:#fffdeb;--beam-x:50%;--beam-y:50%;--beam-size:95px;--beam-blur:28px;--beam-intensity:.9;position:absolute;inset:-2px;background:radial-gradient(circle var(--beam-size) at var(--beam-x) var(--beam-y),var(--beam-color) 0%,transparent 90%);filter:blur(var(--beam-blur));opacity:var(--beam-intensity);transition:background .3s,opacity .3s,filter .3s;pointer-events:none}
+    .preview::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.8%,#ffffff0b 50%,transparent 50.2%),linear-gradient(transparent 49.8%,#ffffff0b 50%,transparent 50.2%);pointer-events:none}
+    .preview.full-mode{background:#f8f6e9}.preview.full-mode::before{opacity:.15}.preview.full-mode .preview-beam{opacity:.05}
+    .preview-label{position:absolute;top:19px;left:21px;border:1px solid #ffffff32;background:#141416a8;color:#fff;padding:8px 12px;border-radius:999px;font-weight:800;letter-spacing:1px;font-size:9px;text-transform:uppercase;backdrop-filter:blur(12px)}
+    .preview-corner{position:absolute;bottom:16px;right:20px;font-size:11px;color:#e9e9e9a6;letter-spacing:.4px}.preview.full-mode .preview-corner{color:#222}
+    .group{margin-top:25px}.group-title{display:flex;align-items:center;gap:11px;color:#e7e7e9;margin-bottom:14px;font-size:13px;font-weight:800;letter-spacing:-.1px}.group-title span{border-radius:999px;background:#252628;color:#bdbdbf;padding:4px 9px;font-size:10px}
+    .tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+    .tool{min-height:124px;padding:18px;background:#17181a;border:1px solid #ffffff13;border-radius:23px;color:#efeff0;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:10px;justify-content:space-between;transition:transform .18s,background .18s,border .18s;position:relative;overflow:hidden}
+    .tool:hover{transform:translateY(-2px);background:#1d1e20;border-color:#ffffff38}.tool:active{transform:scale(.98)}.tool.active{background:#282719;border-color:#ffe34c87}.tool.active::after{content:"";position:absolute;right:15px;top:17px;width:7px;height:7px;border-radius:50%;background:var(--yellow);box-shadow:0 0 10px var(--yellow)}
+    .tool-icon{display:grid;place-items:center;width:36px;height:36px;background:#2a2a2c;border-radius:12px;color:#ffe34c}.tool-icon svg{width:18px;height:18px;stroke-width:2}.tool.active .tool-icon{background:var(--yellow);color:#0e0e0f}.tool-name{font-size:12px;line-height:1.38;font-weight:800}.tool-hint{font-size:10px;color:#a0a0a3;font-weight:500;margin-top:3px;line-height:1.4}.tool.active .tool-hint{color:#bcb69a}
+    .bottom-row{margin:32px 0 0;display:flex;gap:12px}.bottom-row button{flex:1;min-height:60px;border-radius:999px;border:1px solid #ffffff25;background:#222225;color:#fff;font-size:13px;font-weight:800}.bottom-row .main-off{background:var(--yellow);border-color:var(--yellow);color:#0f0f0f}.bottom-row svg{width:16px;height:16px;vertical-align:middle;margin-right:9px}
+    footer{border-top:1px solid #ffffff10;text-align:center;color:#737477;font-size:11px;padding:24px 0 34px}.footer-dot{color:var(--yellow);margin:0 8px}
+    .toast{position:fixed;z-index:100;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#27282a;border:1px solid #ffffff31;border-radius:20px;padding:15px 19px;color:#f5f5f5;box-shadow:0 18px 50px #000b;font-weight:700;font-size:12px;line-height:1.5;width:max-content;max-width:calc(100% - 32px);text-align:center;transition:opacity .25s,transform .25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .modal-shade{position:fixed;inset:0;background:#050505c9;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;z-index:80;padding:20px;overflow-y:auto}.modal-shade.open{display:flex}
+    .modal{width:min(440px,100%);padding:29px;background:linear-gradient(145deg,#222326,#131416 70%);border:1px solid #ffffff29;box-shadow:0 30px 120px #000d;border-radius:34px;animation:pop .32s cubic-bezier(.2,.75,.25,1) both;position:relative}
+    .modal-top{display:flex;justify-content:space-between;align-items:center}.modal-icon{height:51px;width:51px;display:grid;place-items:center;background:#ffe34c;color:#080808;border-radius:17px}.close{height:38px;width:38px;border:1px solid #ffffff2c;background:#2e2e30;color:#fff;border-radius:50%;display:grid;place-items:center}.close svg{width:18px;height:18px}
+    .modal-tag{display:inline-block;margin:27px 0 9px;color:#ffe34c;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.7px}.modal h3{font-family:'Space Grotesk',Manrope,sans-serif;font-size:31px;line-height:1.07;letter-spacing:-1.6px;margin:0}.modal-desc{font-size:12px;line-height:1.8;color:#b1b1b5;margin:15px 0 0}
+    .price-card{margin:24px 0 20px;border:1px solid #64572a;background:linear-gradient(115deg,#272419,#1f1f1f);border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:10px}.price-card span{font-size:11px;color:#d0c9b0;font-weight:600}.price-card strong{font-family:'Space Grotesk',Manrope,sans-serif;font-size:34px;letter-spacing:-1px;white-space:nowrap}
+    .mod-pay{width:100%;border:0;background:#ffe34c;border-radius:999px;color:#10100a;font-size:13px;font-weight:800;min-height:57px}.mod-exit{width:100%;border:1px solid #ffffff26;background:transparent;color:#dededf;border-radius:999px;font-size:12px;font-weight:700;min-height:49px;margin-top:10px}
+    .mod-safe{margin-top:17px;text-align:center;color:#bfc0c2;font-size:12px;line-height:1.8}.mod-safe svg{width:14px;height:14px;vertical-align:-2px;margin-right:5px}.shut{text-align:center;color:#bbb;font-size:11px;margin-top:14px}
+    #paywall-next[hidden],#paywall-offer[hidden]{display:none}
+    .demo-emblem{margin:14px 0 20px;width:72px;height:72px;border:1px solid #ffe34c66;background:#ffe34c16;color:var(--yellow);display:grid;place-items:center;border-radius:25px}.demo-emblem svg{width:34px;height:34px}
+    .demo-details{border:1px solid #ffffff21;border-radius:22px;background:#ffffff08;padding:19px;margin:20px 0 24px}
+    .demo-details .demo-row{display:flex;justify-content:space-between;gap:20px;font-size:12px;padding:9px 0;color:#babbbf}
+    .demo-details .demo-row strong{color:#f7f7f6;font-weight:800}
+    .demo-details .demo-row+.demo-row{border-top:1px solid #ffffff15}
+
+    .screen-light{position:fixed;inset:0;z-index:70;background:var(--screen-color,#fff);display:none;justify-content:flex-end;align-items:center;flex-direction:column;padding:40px 20px max(28px,env(safe-area-inset-bottom));color:#111}.screen-light.active{display:flex}.screen-light button{background:#171717;border:0;color:#fff;padding:17px 29px;border-radius:999px;font-size:13px;font-weight:800;box-shadow:0 8px 30px #0004}
+    @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+    @keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+    .preview.breathe .preview-beam{animation:breathe 3s ease-in-out infinite}.preview.rainbow .preview-beam{animation:rainbow 7s linear infinite}
+    @media (max-width:650px){.wrap{width:calc(100% - 28px)}.header{height:75px}.brand-symbol{width:40px;height:40px}.header-right{padding:10px;font-size:9px}.eyebrow{font-size:10px}main{padding:34px 0 54px}.title{margin-top:23px}.light-stage{height:270px;margin-top:7px}.stage-lines{width:250px;height:250px}.light-halo{width:200px;height:200px}.light-core{width:112px;height:112px}.stage-label{bottom:2px}.power-area{margin-top:25px}.helper{padding:16px;border-radius:20px;margin-top:25px}.features{margin-top:55px}.tools{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tool{min-height:115px;padding:15px;border-radius:21px}.section-head h2{font-size:27px}.preview{height:192px}.section-head{align-items:center}.number-bubble{font-size:10px;padding:9px 11px}.modal{padding:23px;border-radius:30px}.modal h3{font-size:28px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-12h-7l0-8z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 2v10m6.36-6.36a9 9 0 1 1-12.72 0" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-torch" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><rect x="12.7" y="11.8" width="22.6" height="8.3" rx="3.3"/><path d="M15.6 20.1 20.2 25v13.5a3.8 3.8 0 0 0 7.6 0V25l4.6-4.9M22 33.7h4"/></g></symbol>
+  <symbol id="i-torch-on" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><rect x="12.7" y="11.8" width="22.6" height="8.3" rx="3.3"/><path d="M15.6 20.1 20.2 25v13.5a3.8 3.8 0 0 0 7.6 0V25l4.6-4.9M22 33.7h4"/><g class="torch-rays"><path d="M24 2v5.1M9.2 5.1l3.7 3.7M38.8 5.1l-3.7 3.7M4.9 15.1h4.4M43.1 15.1h-4.4"/></g></g></symbol>
+  <symbol id="i-light" viewBox="0 0 24 24"><path d="m9 18 6-6M11 5l8 8-4 4-8-8 4-4zm-5 5L3 13l8 8 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-magic" viewBox="0 0 24 24"><path d="m4 20 16-16M13 3l1-2 1 2 2 1-2 1-1 2-1-2-2-1 2-1zM4 10l1-2 1 2 2 1-2 1-1 2-1-2-2-1 2-1z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" stroke="currentColor" fill="none" stroke-width="2"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.7 8.7 0 1 0 20 15.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="i-focus" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M3 3l6 6m12-6-6 6M3 21l6-6m12 6-6-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 2v20m0-20-4 4m4-4 4 4m-4 16-4-4m4 4 4-4M2 12h20m-20 0 4-4m-4 4 4 4m16-4-4-4m4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="12" cy="12" r="3" fill="currentColor"/></symbol>
+  <symbol id="i-waves" viewBox="0 0 24 24"><path d="M2 8c4 0 4-4 8-4s4 4 8 4 4-4 4-4M2 16c4 0 4-4 8-4s4 4 8 4 4-4 4-4M2 22c4 0 4-4 8-4s4 4 8 4 4-4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M5 10h14v11H5V10zm3 0V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><path d="M4 4h6M4 4v6m16-6h-6m6 0v6M4 20h6m-6 0v-6m16 6h-6m6 0v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+ </defs></svg>
+<div class="wrap">
+  <header class="header">
+    <a class="brand" href="#top" aria-label="FLASH+ Accueil"><span class="brand-symbol"><svg width="25" height="25"><use href="#i-bolt"/></svg></span><span class="brand-word">FLASH<span>+</span></span></a>
+    <div class="header-right"><span class="online" id="online-dot"></span><span id="header-status">EN VEILLE</span></div>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="eyebrow"><svg><use href="#i-magic"/></svg> LA LUMIÈRE, RÉINVENTÉE</div>
+      <h1 class="title" id="hero-title">Votre lumière.<br><em>Vos règles.</em></h1>
+      <p class="sub">Prenez le contrôle de votre éclairage avec une interface nouvelle génération, pensée pour votre téléphone.</p>
+      <div class="light-stage" id="stage">
+        <div class="stage-lines"></div><div class="light-halo"></div>
+        <div class="light-core"><svg id="stage-icon" aria-label="Lampe torche"><use id="stage-use" href="#i-torch"/></svg></div>
+        <div class="stage-label" id="stage-label">● &nbsp; LAMPE EN VEILLE</div>
+      </div>
+      <div class="power-area">
+        <button class="power" id="power-button" type="button"><svg><use href="#i-power"/></svg><span>ALLUMER LA LAMPE TORCHE</span></button>
+      </div>
+      <div class="helper"><span class="info"><svg width="17" height="17"><use href="#i-bolt"/></svg></span><p><strong>20 fonctions exclusives à découvrir.</strong> Une fois votre lampe torche allumée, vous débloquerez de nouvelles options de couleur, d'intensité et de faisceau.</p></div>
+    </section>
+    <section class="features" id="features" aria-label="Fonctionnalités débloquées" hidden>
+      <div class="section-head"><div><div class="section-kicker">VOTRE STUDIO LUMIÈRE</div><h2>Contrôle total.</h2></div><div class="number-bubble">20 FONCTIONS</div></div>
+      <div class="preview" id="preview"><div class="preview-beam" id="preview-beam"></div><div class="preview-label">APERÇU EN DIRECT</div><div class="preview-corner" id="preview-corner">Blanc naturel</div></div>
+      <div id="feature-groups"></div>
+      <div class="bottom-row"><button id="screen-button" type="button"><svg><use href="#i-max"/></svg>Éclairage écran</button><button class="main-off" id="off-button" type="button"><svg><use href="#i-power"/></svg>Éteindre la lampe</button></div>
+    </section>
+  </main>
+  <footer>FLASH+ <span class="footer-dot">•</span> ÉCLAIRAGE INTELLIGENT</footer>
+</div>
+
+<div class="screen-light" id="screen-light" role="dialog" aria-modal="true" aria-label="Éclairage de l'écran"><button id="exit-screen" type="button">Fermer l'éclairage écran</button></div>
+<div class="activation-overlay" id="activation-overlay" aria-hidden="true"><div class="activation-content"><div class="activation-symbol"><svg aria-hidden="true"><use href="#i-torch-on"/></svg></div><div class="activation-copy">ÉCLAIRAGE ACTIVÉ</div></div></div>
+<div class="modal-shade" id="paywall" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-top"><div class="modal-icon"><svg width="27" height="27"><use href="#i-lock"/></svg></div><button class="close" id="close-modal" aria-label="Fermer la fenêtre" type="button"><svg><use href="#i-x"/></svg></button></div>
+    <div id="paywall-offer">
+      <div class="modal-tag">FLASH+ ULTRA · ACCÈS SPÉCIAL</div>
+      <h3 id="modal-title">Option extinction<br>verrouillée.</h3>
+      <p class="modal-desc">L'extinction depuis l'interface FLASH+ figure dans les fonctionnalités premium. Voici le tarif d'activation affiché pour cette option.</p>
+      <div class="price-card"><div><span>Déverrouillage unique</span><div style="font-size:11px;margin-top:5px;color:#92928f">Option FLASH+ ULTRA</div></div><strong>499 €</strong></div>
+      <button type="button" class="mod-pay" id="fake-pay">PAYER · 499 €</button>
+      <button type="button" class="mod-exit" id="exit-modal">Fermer et revenir à l'accueil</button>
+    </div>
+    <div id="paywall-next" hidden>
+      <div class="demo-emblem"><svg><use href="#i-check"/></svg></div>
+      <div class="modal-tag">FLASH+ · DERNIÈRE ÉTAPE</div>
+      <h3 id="modal-title-next">Expérience<br>terminée.</h3>
+      <p class="modal-desc">Cette étape est une simulation : aucune transaction n'est effectuée, aucune coordonnée bancaire n'est demandée et votre lampe torche reste toujours sous votre contrôle.</p>
+      <div class="demo-details"><div class="demo-row"><span>Montant prélevé</span><strong>0,00 €</strong></div><div class="demo-row"><span>Informations bancaires</span><strong>Non requises</strong></div><div class="demo-row"><span>Lampe torche</span><strong>Éteinte</strong></div></div>
+      <button type="button" class="mod-pay" id="finish-demo">RETOUR À L'ACCUEIL</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const icons = (name) => `<svg aria-hidden="true"><use href="#i-${name}"></use></svg>`;
+  const groups = [
+    { name:'Couleurs', subtitle:'06', items:[
+      ['Blanc pur','Éclairage classique','sun','white'],
+      ['Blanc chaud','Ambiance dorée','sun','warm'],
+      ['Bleu glacier','Teinte polaire','circle','blue'],
+      ['Rouge néon','Rouge intense','circle','red'],
+      ['Vert laser','Vert électrique','circle','green'],
+      ['Violet cosmique','Teinte futuriste','circle','purple']
+    ]},
+    { name:'Intensité', subtitle:'04', items:[
+      ['Puissance max','Intensité élevée','bolt','max'],
+      ['Lumière douce','Intensité apaisante','moon','soft'],
+      ['Ultra précise','Faisceau net','focus','sharp'],
+      ['Lumière diffuse','Halo adouci','waves','diffuse']
+    ]},
+    { name:'Faisceau', subtitle:'06', items:[
+      ['Faisceau large','Zone élargie','expand','wide'],
+      ['Faisceau étroit','Point lumineux','focus','narrow'],
+      ['Éclairage centré','Au milieu','circle','center'],
+      ['Vers la gauche','Zone décalée','move','left'],
+      ['Vers la droite','Zone décalée','move','right'],
+      ['Vers le haut','Zone décalée','move','up']
+    ]},
+    { name:'Modes spéciaux', subtitle:'04', items:[
+      ['Mode RGB','Spectre de couleurs','magic','rgb'],
+      ['Mode respiration','Intensité animée','waves','breathe'],
+      ['Mode ambiance','Lumière enveloppante','moon','ambient'],
+      ['Plein écran','Éclairage uniforme','max','full']
+    ]}
+  ];
+  // La LED physique d'un smartphone ne prend pas en charge les couleurs ni la focalisation via le Web.
+  // Les 20 commandes sont des effets sur l'aperçu et, pour les couleurs, sur l'éclairage de l'écran.
+  let state = { on:false, track:null, stream:null, physical:false, color:'#fffdeb', intensity:.9, size:95, blur:28, x:50, y:50, mode:'normal', active:new Set(), lock:false };
+  const beam = $('preview-beam');
+  const preview = $('preview');
+  const screen = $('screen-light');
+  const colorMap = { white:'#fffdeb',warm:'#ffe0a3',blue:'#a8e0ff',red:'#ff5b66',green:'#a5ff8c',purple:'#c4a0ff' };
+  let toastTimeout, activationTimeout;
+  function toast(message){
+    clearTimeout(toastTimeout); $('toast').textContent=message; $('toast').classList.add('show');
+    toastTimeout=setTimeout(()=>$('toast').classList.remove('show'),3200);
+  }
+  function renderTools(){
+    $('feature-groups').innerHTML=groups.map(g => `<div class="group"><div class="group-title">${g.name}<span>${g.subtitle}</span></div><div class="tools">${g.items.map(i=>`<button class="tool" type="button" data-action="${i[3]}" aria-pressed="false"><span class="tool-icon">${icons(i[2])}</span><span><span class="tool-name">${i[0]}</span><div class="tool-hint">${i[1]}</div></span></button>`).join('')}</div></div>`).join('');
+  }
+  renderTools();
+  function renderPreview(){
+    beam.style.setProperty('--beam-color',state.color);
+    beam.style.setProperty('--beam-size',state.size+'px');
+    beam.style.setProperty('--beam-blur',state.blur+'px');
+    beam.style.setProperty('--beam-intensity',String(state.intensity));
+    beam.style.setProperty('--beam-x',state.x+'%');
+    beam.style.setProperty('--beam-y',state.y+'%');
+    preview.classList.toggle('full-mode',state.mode==='full');
+    preview.classList.toggle('breathe',state.mode==='breathe');
+    preview.classList.toggle('rainbow',state.mode==='rgb');
+    $('preview-corner').textContent=state.mode==='rgb'?'Spectre RGB':state.mode==='breathe'?'Respiration':state.mode==='full'?'Plein écran':state.mode==='ambient'?'Ambiance':state.color==='#fffdeb'?'Blanc naturel':'Réglage personnalisé';
+    screen.style.setProperty('--screen-color',state.mode==='full'?'#fff':state.color);
+    document.querySelectorAll('.tool').forEach(b=>{const active=state.active.has(b.dataset.action);b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+  }
+  function useTool(action){
+    const color = colorMap[action];
+    if(color){state.color=color;state.mode='normal';state.active=new Set([action]);}
+    else {
+      state.active=new Set([action]);
+      switch(action){
+        case 'max':state.intensity=1;state.mode='normal';break;
+        case 'soft':state.intensity=.4;state.mode='normal';break;
+        case 'sharp':state.blur=2;state.mode='normal';break;
+        case 'diffuse':state.blur=45;state.mode='normal';break;
+        case 'wide':state.size=210;state.mode='normal';break;
+        case 'narrow':state.size=39;state.mode='normal';break;
+        case 'center':state.x=50;state.y=50;state.mode='normal';break;
+        case 'left':state.x=25;state.y=50;state.mode='normal';break;
+        case 'right':state.x=75;state.y=50;state.mode='normal';break;
+        case 'up':state.x=50;state.y=25;state.mode='normal';break;
+        case 'rgb':state.mode='rgb';break;
+        case 'breathe':state.mode='breathe';break;
+        case 'ambient':state.mode='ambient';state.size=180;state.blur=45;state.intensity=.75;break;
+        case 'full':state.mode='full';break;
+      }
+    }
+    renderPreview();
+  }
+  $('feature-groups').addEventListener('click',event=>{
+    const button=event.target.closest('[data-action]');if(button)useTool(button.dataset.action);
+  });
+  async function startHardwareTorch(){
+    if(!navigator.mediaDevices?.getUserMedia) return false;
+    let stream;
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'}}});
+      const track=stream.getVideoTracks()[0];
+      if(!track)throw Error('Aucune caméra vidéo');
+      await track.applyConstraints({advanced:[{torch:true}]});
+      // Sur certains appareils, le navigateur accepte la contrainte sans activer réellement la LED.
+      // On n'annonce donc pas un contrôle matériel garanti.
+      state.stream=stream;state.track=track;
+      return true;
+    } catch(err){
+      if(stream)stream.getTracks().forEach(t=>t.stop());
+      return false;
+    }
+  }
+  function stopHardwareTorch(){
+    const track=state.track;
+    if(track && track.readyState==='live'){
+      try{ const maybe=track.applyConstraints({advanced:[{torch:false}]}); if(maybe?.catch)maybe.catch(()=>{}); }catch(e){}
+    }
+    if(state.stream)state.stream.getTracks().forEach(t=>t.stop());
+    state.stream=null;state.track=null;state.physical=false;
+  }
+  function setActive(active){
+    state.on=active;
+    $('stage').classList.toggle('stage-on',active);
+    $('online-dot').classList.toggle('on',active);
+    $('header-status').textContent=active?'LAMPE ACTIVE':'EN VEILLE';
+    $('stage-label').innerHTML=active?'● &nbsp; <strong>ÉCLAIRAGE ACTIVÉ</strong>':'● &nbsp; LAMPE EN VEILLE';
+    $('features').hidden=!active;
+    $('stage-use').setAttribute('href',active?'#i-torch-on':'#i-torch');
+    const button=$('power-button');
+    button.classList.toggle('off',active);
+    button.innerHTML=active?`${icons('check')} <span>ÉCLAIRAGE ACTIVÉ</span>`:`${icons('power')} <span>ALLUMER LA LAMPE TORCHE</span>`;
+    if(active){setTimeout(()=>$('features').scrollIntoView({behavior:'smooth',block:'start'}),220);}
+  }
+  async function turnOn(){
+    if(state.on||state.lock)return;
+    state.lock=true;
+    const button=$('power-button');button.disabled=true;button.querySelector('span').textContent='ACTIVATION EN COURS…';
+    try{
+      state.physical=await startHardwareTorch();
+      setActive(true);
+      const activation=$('activation-overlay');
+      clearTimeout(activationTimeout);
+      activation.classList.add('show');
+      activationTimeout=setTimeout(()=>activation.classList.remove('show'),1550);
+      toast(state.physical?'Demande d’activation de la LED envoyée. Les effets sont visibles à l’écran.':'Mode éclairage écran disponible : LED non accessible sur ce navigateur.');
+    }finally{state.lock=false;button.disabled=false;}
+  }
+  function extinguish(){
+    clearTimeout(activationTimeout);
+    $('activation-overlay').classList.remove('show');
+    stopHardwareTorch();
+    screen.classList.remove('active');
+    setActive(false);
+  }
+  function showPaywall(){
+    // La demande d’extinction affiche l’offre sans couper la LED.
+    // L’utilisateur peut toujours quitter la page pour arrêter le flux caméra.
+    clearTimeout(toastTimeout);$('toast').classList.remove('show');
+    $('paywall-offer').hidden=false;$('paywall-next').hidden=true;
+    $('paywall').setAttribute('aria-labelledby','modal-title');
+    $('paywall').classList.add('open');$('paywall').setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    $('close-modal').focus();
+  }
+  function hidePaywall(){
+    $('paywall').classList.remove('open');$('paywall').setAttribute('aria-hidden','true');
+    $('paywall-offer').hidden=false;$('paywall-next').hidden=true;
+    document.body.style.overflow='';$('power-button').focus();
+  }
+  $('power-button').addEventListener('click',()=>{state.on?showPaywall():turnOn();});
+  $('off-button').addEventListener('click',showPaywall);
+  $('close-modal').addEventListener('click',hidePaywall);
+  $('exit-modal').addEventListener('click',hidePaywall);
+  $('fake-pay').addEventListener('click',()=>{
+    // La LED ne s’éteint qu’après validation du bouton de paiement simulé.
+    extinguish();
+    $('paywall-offer').hidden=true;$('paywall-next').hidden=false;
+    $('paywall').setAttribute('aria-labelledby','modal-title-next');
+    $('finish-demo').focus();
+  });
+  $('finish-demo').addEventListener('click',hidePaywall);
+  $('screen-button').addEventListener('click',()=>{if(state.on)screen.classList.add('active');});
+  $('exit-screen').addEventListener('click',()=>screen.classList.remove('active'));
+  $('paywall').addEventListener('click',e=>{if(e.target===$('paywall'))hidePaywall();});
+  window.addEventListener('keydown',e=>{if(e.key==='Escape'){screen.classList.remove('active');if($('paywall').classList.contains('open'))hidePaywall();}});
+  window.addEventListener('pagehide',stopHardwareTorch);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.track){stopHardwareTorch();if(state.on)toast('LED désactivée en arrière-plan.');}});
+  renderPreview();
+})();
+</script>
+</body>
+</html>
